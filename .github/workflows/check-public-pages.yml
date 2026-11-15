@@ -16,7 +16,7 @@ jobs:
           python - <<'PY'
           import time, urllib.request
           base = "https://ysjh84s98n-code.github.io/video-clipping-agent-site/"
-          pages = [("", "Reap API"), ("privacy.html", "Reap credentials and media retention"), ("styles.css", ":root")]
+          pages = [("", "drive.readonly"), ("privacy.html", "drive.readonly"), ("styles.css", ":root")]
           for attempt in range(12):
               try:
                   for path, expected in pages:
