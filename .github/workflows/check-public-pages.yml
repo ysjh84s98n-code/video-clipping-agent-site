@@ -1,0 +1,36 @@
+name: Verify public pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  anonymous-http:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check public pages without authentication
+        shell: bash
+        run: |
+          python - <<'PY'
+          import time, urllib.request
+          base = "https://ysjh84s98n-code.github.io/video-clipping-agent-site/"
+          pages = [("", "Video-Clipping-Agent"), ("privacy.html", "Privacy Policy"), ("styles.css", ":root")]
+          for attempt in range(12):
+              try:
+                  for path, expected in pages:
+                      request = urllib.request.Request(base + path, headers={"User-Agent": "public-pages-verifier"})
+                      with urllib.request.urlopen(request, timeout=15) as response:
+                          body = response.read(200000).decode("utf-8")
+                          assert response.status == 200
+                          assert response.url.startswith(base)
+                          assert expected in body
+                          print("Unauthenticated HTTP 200:", response.url)
+                  print("Public homepage, privacy policy and stylesheet verified; no credentials or cookies supplied.")
+                  break
+              except Exception:
+                  if attempt == 11:
+                      raise
+                  time.sleep(5)
+          PY
